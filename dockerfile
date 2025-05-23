@@ -57,20 +57,17 @@ RUN set -ex && mkdir -p /home/runner/.millennium/ext/data/cache/lib/tmp \
     && gcc -m32 -shared -o ../libpython-3.11.8.so *.o \
     && cd /home/runner/.millennium/ext/data/cache/lib \
     && rm -rvf tmp \
-    && mkdir -p /home/runner/Documents/LibPython/ \
-    && cd /home/runner/.millennium/ext/data/cache/include/python3.11/ \
-    && mv * /home/runner/Documents/LibPython/ \
     && rm -rvf /home/runner/.millennium/ext/data/cache/lib/python3.11/test/ \
     && rm -rvf /home/runner/.millennium/ext/data/cache/share \
     && rm -rvf /home/runner/.millennium/ext/data/cache/include \
     && rm -rvf /home/runner/.millennium/ext/data/cache/lib/python3.11/__pycache__/ \
     && rm -rvf /home/runner/.millennium/ext/data/cache/lib/python3.11/config-3.11-x86_64-linux-gnu/ \
     && rm /home/runner/.millennium/ext/data/cache/lib/libpython3.11.a \
-    && mv /home/runner/.millennium/ext/data/cache/lib/libpython-3.11.8.so /home/runner/.millennium/libpython-3.11.8.so \
+    && cp -v /home/runner/.millennium/ext/data/cache/lib/libpython-3.11.8.so /home/runner/.millennium/libpython-3.11.8.so \
     && mkdir -p /home/runner/env/ext/data \
     && cp -rv /home/runner/.millennium/ext/data/cache /home/runner/env/ext/data \
-    && mkdir -p /opt/python-i686-3.11.8/lib/ \
-    && cp -v /home/runner/.millennium/libpython-3.11.8.so /opt/python-i686-3.11.8/lib/libpython-3.11.8.so
+    && mkdir -p /opt/millennium-python/lib/ \
+    && cp -v /home/runner/.millennium/libpython-3.11.8.so /opt/millennium-python/lib/libpython-3.11.8.so
 
 WORKDIR /home/runner/work/Millennium/Millennium
 
@@ -98,9 +95,6 @@ RUN set -ex \
     && cmake --preset=linux-debug -DGITHUB_ACTION_BUILD=OFF \
     && cmake --build build \
     && mkdir -p /home/runner/env/ext/data/shims \
-    && cp -v build/libmillennium_x86.so /home/runner/env/ \
-    && cp -v ~/.millennium/libpython-3.11.8.so /home/runner/env/libpython-3.11.8.so \
-    && cp -v scripts/posix/start.sh /home/runner/env/start.sh \
     && npm install @steambrew/api \
     && cp -v node_modules/@steambrew/api/dist/webkit_api.js /home/runner/env/ext/data/shims/webkit_api.js \
     && cp -v node_modules/@steambrew/api/dist/client_api.js /home/runner/env/ext/data/shims/client_api.js
@@ -109,12 +103,13 @@ RUN set -ex \
 WORKDIR /home/runner
 RUN set -ex \
     && mkdir -p build/usr/lib/millennium \
-    && cp -rv env/*.so build/usr/lib/millennium/ \
+    && cp -rv work/Millennium/Millennium/build/libmillennium_x86.so build/usr/lib/millennium/ \
     && mkdir build/usr/bin \
     && cp -v work/Millennium/Millennium/build/cli/millennium build/usr/bin/ \
     && chmod +x build/usr/bin/millennium \
-    && mkdir -p build/home/user/.local/share/millennium \
-    && cp -rv env/ext/data/shims build/home/user/.local/share/millennium/lib/ \
-    && cp -rv env/ext/data/cache build/home/user/.local/share/millennium/lib/ \
-    && cp -rv env/ext/data/assets build/home/user/.local/share/millennium/lib/ \
+    && mkdir -p build/usr/share/millennium \
+    && cp -rv env/ext/data/shims build/usr/share/millennium/ \
+    && cp -rv env/ext/data/assets build/usr/share/millennium/ \
+    && mkdir -p build/opt/millennium-python/ \
+    && cp -rv env/ext/data/cache build/opt/millennium-python/ \
     && tar -czvf build-millennium.tar.gz build

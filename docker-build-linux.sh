@@ -77,7 +77,7 @@ if [ "$1" != 'install' ] ;  then
 fi
 
 # ask to proceed
-echo -e "\n${BOLD_PINK}::${RESET} Installing for \"$SUDO_USER\". Proceed with installation? [Y/n] \c"
+echo -e "\n${BOLD_PINK}::${RESET} Proceed with installation? [Y/n] \c"
 
 read -r proceed
 
@@ -113,13 +113,6 @@ else
     exit 1
 fi
 
-log "\n\n\t${BOLD_YELLOW}Moving files to /home/$SUDO_USER/ ${RESET}\n\n"
-
-if ! cp -rfv "$extract_path/build/home/user/.local" "/home/$SUDO_USER/" ; then
-	log "${BOLD_RED}Failed to move files to /home/$SUDO_USER/ ...${RESET}"
-	exit 1
-fi
-
 log "\n\n\t${BOLD_YELLOW}Moving files to /usr ${RESET}\n\n"
 
 if ! sudo cp -rfv "$extract_path/build/usr/" "/" ; then
@@ -127,6 +120,10 @@ if ! sudo cp -rfv "$extract_path/build/usr/" "/" ; then
 	exit 1
 fi
 
+if ! sudo cp -rfv "$extract_path/build/opt/" "/" ; then
+	log "${BOLD_RED}Failed to move files to /opt/ ...${RESET}"
+	exit 1
+fi
 folder_size=$(du -sb "$extract_path" | awk '{print $1}' | numfmt --to=iec-i --suffix=B --padding=7 | sed 's/\([0-9]\)\([A-Za-z]\)/\1 \2/')
 
 log "\nTotal Install Size: $folder_size"
@@ -134,9 +131,5 @@ log "\nTotal Install Size: $folder_size"
 log "cleaning up packages..."
 rm -rf "$millennium_install"
 log "done."
-
-if ! sudo chown -R "$SUDO_USER":"$SUDO_USER" "/home/$SUDO_USER/.local/share/millennium" ; then
-	log "${BOLD_RED}Failed to set permissions for /home/$SUDO_USER/.local/share/millennium ...${RESET}"
-fi
 
 log "\n${BOLD_PINK}::${RESET} To get started, run \"millennium patch\" to load Millennium along side Steam. Your base installation of Steam has not been modified, this is simply an extension."
