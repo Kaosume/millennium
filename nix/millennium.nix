@@ -1,7 +1,6 @@
 {
   stdenv_32bit,
   pkgsi686Linux,
-  cli11,
   steam,
   cmake,
   ninja,
@@ -16,16 +15,16 @@ stdenv_32bit.mkDerivation {
   version = "git";
 
   src = ../.;
-  #patches = [
-  #  ./disableCli.patch
-  #];
+  patches = [
+    ./disableCli.patch
+    ./startScript.patch
+  ];
 
   buildInputs = [
     pkgsi686Linux.python311
     pkgsi686Linux.curl
     cmake
     ninja
-    cli11
     loader
   ];
 
@@ -42,7 +41,6 @@ stdenv_32bit.mkDerivation {
   '';
   installPhase = ''
     mkdir -p $out/bin $out/lib/millennium
-    cp cli/millennium $out/bin/millennium-cli
     cp libmillennium_x86.so $out/lib/millennium
     cp $src/scripts/posix/start.sh $out/bin/millennium
   '';
