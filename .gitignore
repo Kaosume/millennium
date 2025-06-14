@@ -11,3 +11,6 @@
 /examples/plugin/.millennium
 
 /assets/src/env.ts
+
+/.direnv
+/result
