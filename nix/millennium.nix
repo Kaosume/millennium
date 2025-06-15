@@ -2,6 +2,7 @@
   stdenv_32bit,
   pkgsi686Linux,
   steam,
+  replaceVars,
   cmake,
   ninja,
   callPackage,
@@ -17,12 +18,16 @@ stdenv_32bit.mkDerivation {
   src = ../.;
   patches = [
     ./disableCli.patch
-    ./startScript.patch
+    (replaceVars ./startScript.patch {
+      inherit steam;
+      OUT = null;
+    })
   ];
 
   buildInputs = [
     pkgsi686Linux.python311
     pkgsi686Linux.curl
+    pkgsi686Linux.openssl
     cmake
     ninja
     loader
@@ -34,21 +39,17 @@ stdenv_32bit.mkDerivation {
   #
   ####
   configurePhase = ''
-    cmake -G Ninja 
+    cmake -G Ninja
+    substituteInPlace scripts/posix/start.sh \
+      --replace '@OUT@' "$out"
   '';
   buildPhase = ''
-    cmake --build . --config Release
+    cmake --build .
   '';
   installPhase = ''
     mkdir -p $out/bin $out/lib/millennium
     cp libmillennium_x86.so $out/lib/millennium
-    cp $src/scripts/posix/start.sh $out/bin/millennium
-  '';
-  postFixup = ''
-    substituteInPlace $out/bin/millennium \
-      --replace '/usr/lib/millennium' "$out/lib" \
-      --replace '/usr/lib/steam/bin_steam.sh' '${steam}/bin/steam' \
-      --replace '/home/shadow/dev/Millennium/build' "$out/lib/millennium"
+    cp scripts/posix/start.sh $out/bin/millennium
   '';
   NIX_CFLAGS_COMPILE = [
     "-isystem ${pkgsi686Linux.python311Full}/include/${pkgsi686Linux.python311Full.libPrefix}"
