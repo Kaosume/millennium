@@ -38,8 +38,9 @@
 #include <iphlpapi.h>
 #include <tchar.h>
 #pragma comment(lib, "iphlpapi.lib")
-#include <tlhelp32.h>
+#include "cmd.h"
 #include <psapi.h>
+#include <tlhelp32.h>
 #elif __linux__
 #include <fstream>
 #include <sstream>
@@ -47,7 +48,6 @@
 #include <cstdlib>
 #include <cstdio>
 #endif
-#include "cmd.h"
 
 
 static bool bHasCheckedConnection = false;

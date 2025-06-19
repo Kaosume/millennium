@@ -215,6 +215,7 @@ include_directories(
   ${CMAKE_SOURCE_DIR}/vendor/websocketpp
   ${CMAKE_SOURCE_DIR}/vendor/crow/include
   ${CMAKE_SOURCE_DIR}/vendor/ini/src
+  ${CMAKE_SOURCE_DIR}/vendor/curl/include
 )
 
 add_compile_definitions(
@@ -301,7 +302,7 @@ if(WINDRES)
   target_link_libraries(Millennium ${CMAKE_BINARY_DIR}/version.o)
 endif()
 
-find_package(CURL REQUIRED) # used for web requests.
+add_subdirectory(vendor/curl)
 target_link_libraries(Millennium CURL::libcurl)
 
 if(WIN32)

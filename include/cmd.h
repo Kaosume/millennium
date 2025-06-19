@@ -59,7 +59,6 @@ public:
         return false;
     }
 
-    #ifdef _WIN32
     unsigned short GetRemoteDebuggerPort() const 
     {
         const unsigned short defaultPort = 8080; 
@@ -105,7 +104,6 @@ public:
             return defaultPort;
         }
     }
-    #endif
 
     std::vector<std::string> GetArgumentList()
     {
@@ -116,7 +114,6 @@ private:
 
     void ParseCommandLine() 
     {
-#ifdef _WIN32
         int argc = 0;
         wchar_t** argvW = CommandLineToArgvW(GetCommandLineW(), &argc);
         if (!argvW) return;
@@ -132,7 +129,6 @@ private:
             m_argumentList.emplace_back(buffer.data());
         }
         LocalFree(argvW);
-#endif
     }
 
     std::vector<std::string> m_argumentList;
