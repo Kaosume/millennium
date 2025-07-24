@@ -72,24 +72,22 @@ namespace Http
             while (true) 
             {
                 res = curl_easy_perform(curl);
+                Logger.Log("get {}", url);
 
                 if (!retry || res == CURLE_OK) 
                 {
                     break;
                 }
 
-                #if defined(_WIN32)
-                std::this_thread::sleep_for(std::chrono::milliseconds(3));
-                #elif defined(__linux__) || defined(__APPLE__)
+                #if defined(__linux__) || defined(__APPLE__)
 
                 if (g_threadTerminateFlag->flag.load())
                 {
                     throw HttpError("Thread termination flag is set, aborting HTTP request.");
                 }
 
-                /** Calling the server to quickly seems to accident DoS it on unix. */
-                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
                 #endif
+                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             }
             curl_easy_cleanup(curl);
         }
